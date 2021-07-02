@@ -1,0 +1,186 @@
+<template>
+    <div id="login">
+        <div class="bbbug_bg" @click.stop="isLocked=!isLocked;"
+            :style="{backgroundImage:'url('+getStaticUrl(background)+')'}">
+        </div>
+        <div class="bbbug_login">
+            <el-form :model="form" ref="bbbug_login_form" label-width="60px" class="bbbug_login_form"
+                v-loading="bbbug_loading">
+                <div class="bbbug_login_form_title">请先登录后快乐的玩耍吧~
+                    <el-link class="bbbug_login_form_title_guest" @click="loginGuest">游客</el-link>
+                </div>
+                <el-form-item prop="user_account" label="账号"
+                    :rules="[{required: true, message: '账号必须填写才能登录啊...', trigger: 'blur' }]">
+                    <el-input placeholder="支持ID/邮箱登录" v-model="form.user_account">
+                        <el-button slot="append" icon="el-icon-message" title="发送验证码到邮箱" @click="sendMail">
+                            发送
+                        </el-button>
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="user_password" label="密码"
+                    :rules="[{ required: true, message: '不填写密码如何登录???', trigger: 'blur' }]">
+                    <el-input type="password" placeholder="登录密码或验证码" v-model="form.user_password"
+                        @keydown.13.native="doLogin('bbbug_login_form')">
+                    </el-input>
+                </el-form-item>
+                <el-form-item class="bbbug_login_form_submit" style="margin-left:10px;"> <span style="float:left;">
+
+                        <!-- <el-link :underline="false" href="javascript:;" title="Github">
+                            <i class="iconfont icon-git"></i>
+                        </el-link> -->
+                    </span>
+
+                    <el-button type="primary" @click="doLogin('bbbug_login_form')">立即登录</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+    </div>
+</template>
+<script>
+    export
+        default {
+            data() {
+                return {
+                    background: "new/images/bg_dark.jpg",
+                    bbbug_loading: false,
+                    localhost: "",
+                    form: {
+                        user_account: "",
+                        user_password: "",
+                    },
+                    timer: null
+                }
+            },
+            created() {
+                this.localhost = encodeURIComponent(location.href);
+                this.callParentFunction('needLogin', 'please login first!');
+            },
+            methods: {
+                thirdLogin(url) {
+                    console.log(url);
+                    let that = this;
+                    let newWindow = null;
+                    if (self.frameElement && self.frameElement.tagName == "IFRAME") {
+                        console.log("新窗口打开please");
+                        return;
+                        newWindow = window.parent.open(url, "", "height=600,width=600, Left=300px,Top=20px, menubar=no,titlebar=no,scrollbar=no,toolbar=no, status=no,location=no");
+                    } else {
+                        newWindow = window.open(url, "", "height=600,width=600, Left=300px,Top=20px, menubar=no,titlebar=no,scrollbar=no,toolbar=no, status=no,location=no");
+                    }
+                    that.timer = setInterval(function () {
+                        if (newWindow.location.href == location.href) {
+                            clearInterval(self.timer);
+                            location.replace(location.href);
+                            newWindow.close();
+                        }
+                    }, 100);
+                },
+                /**
+                 * @description: 游客方式登录
+                 * @param {null}
+                 * @return {null}
+                 */
+                loginGuest() {
+                    this.$parent.loginGuest();
+                },
+                /**
+                 * @description: 登录
+                 * @param {string} 验证表单名称
+                 * @return {null}
+                 */
+                doLogin(formName) {
+                    let that = this;
+                    that.$refs[formName].validate(function (valid) {
+                        if (valid) {
+                            that.bbbug_loading = true;
+                            that.request({
+                                url: "user/login",
+                                data: that.form,
+                                success(res) {
+                                    that.bbbug_loading = false;
+                                    that.global.baseData.access_token = res.data.access_token;
+                                    localStorage.setItem('access_token', res.data.access_token);
+                                    that.$parent.hideAll();
+                                    that.$parent.getUserInfo();
+                                },
+                                error(res) {
+                                    that.bbbug_loading = false;
+                                }
+                            });
+                        }
+                    });
+                },
+                /**
+                 * @description: 发送邮件
+                 * @param {null}
+                 * @return {null}
+                 */
+                sendMail() {
+                    let that = this;
+                    that.request({
+                        url: "sms/email",
+                        loading: true,
+                        data: {
+                            email: that.form.user_account
+                        },
+                        success(res) {
+                            that.$message.success(res.msg);
+                        }
+                    });
+                }
+            }
+        }
+</script>
+<style>
+    .bbbug_login {
+        display: flex;
+        display: -webkit-flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
+
+    .bbbug_login_form {
+        width: 400px;
+        background-color: white;
+        padding: 10px 20px;
+        padding-right: 30px;
+        padding-bottom: 30px;
+        border-radius: 10px;
+        position: relative;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .bbbug_login_form_title_guest {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+    }
+
+    .bbbug_login_form_title {
+        margin-bottom: 20px;
+        padding: 10px 20px;
+        font-size: 18px;
+    }
+
+    .bbbug_login_form_submit {
+        text-align: right;
+        margin-bottom: 0px !important;
+    }
+
+    .bbbug_login_form_submit .el-form-item__content {
+        margin-left: 10px !important;
+    }
+
+    .bbbug_login_form_submit .iconfont {
+        font-size: 20px;
+    }
+
+    .el-loading-mask {
+        border-radius: 10px;
+    }
+</style>
