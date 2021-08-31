@@ -17,9 +17,9 @@
                         </el-button>
                     </el-input>
                 </el-form-item>
-                <el-form-item prop="user_password" label="密码"
+                <el-form-item prop="user_passwd" label="密码"
                     :rules="[{ required: true, message: '不填写密码如何登录???', trigger: 'blur' }]">
-                    <el-input type="password" placeholder="登录密码或验证码" v-model="form.user_password"
+                    <el-input type="password" placeholder="登录密码或验证码" v-model="form.user_passwd"
                         @keydown.13.native="doLogin('bbbug_login_form')">
                     </el-input>
                 </el-form-item>
@@ -46,7 +46,7 @@
                     localhost: "",
                     form: {
                         user_account: "",
-                        user_password: "",
+                        user_passwd: "",
                     },
                     timer: null
                 }

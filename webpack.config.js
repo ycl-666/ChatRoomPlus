@@ -1,4 +1,12 @@
-﻿const resolve = require('path').resolve
+/*
+ * @Author: YCL
+ * @Date: 2021-07-06 22:02:41
+ * @LastEditTime: 2021-07-06 22:12:28
+ * @LastEditors: Author YCl
+ * @Description: 
+ * @FilePath: \chatroom_web\webpack.config.js
+ */
+const resolve = require('path').resolve
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const url = require('url')
@@ -62,7 +70,7 @@ module.exports = (options = {}) => ({
   devServer: {
     disableHostCheck: true,
     host: '127.0.0.1',
-    port: 80,
+    port: 8088,
     proxy: {
       '/api/': {
         target: 'http://127.0.0.1:8080',

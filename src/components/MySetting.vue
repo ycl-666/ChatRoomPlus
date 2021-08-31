@@ -90,13 +90,13 @@
                  */
                 doUploadBefore(file) {
                     const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif';
-                    const isLt2M = file.size / 1024 / 1024 < 2;
+                    const isLt2M = file.size / 1024 / 1024 < 10;
 
                     if (!isJPG) {
                         this.$message.error('发送图片只能是 JPG/PNG/GIF 格式!');
                     }
                     if (!isLt2M) {
-                        this.$message.error('发送图片大小不能超过 2MB!');
+                        this.$message.error('发送图片大小不能超过 10MB!');
                     }
                     return isJPG && isLt2M;
                 },

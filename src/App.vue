@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div id="app">
     <div
       class="bbbug_bg"
@@ -65,15 +65,12 @@
               <div>房间</div>
             </div>
           </div>
-          <div class="bbbug_main_menu_icon" v-if="!roomInfo.room_hide">
-            <div @click="showRoomList">
-              <img
-                :src="getStaticUrl('new/images/menubar_selectroom.png')"
-                title="切换房间"
-              />
-              <div>房间</div>
+          <div class="bbbug_main_music_info" v-if="songInfo">
+            <div @click="showMusicInfo">
+              <img :src="songInfo.song.pic" class="cover autoRotate" />
             </div>
           </div>
+
           <!--                    <el-upload v-if="(roomInfo.room_type==1 || roomInfo.room_type==4) && userInfo.user_id>0"-->
           <!--                        :action="uploadMusicUrl" :show-file-list="false" :on-success="handleMusicUploadSuccess"-->
           <!--                        :before-upload="doUploadMusicBefore" :data="baseData">-->
@@ -473,64 +470,40 @@
           </div>
           <div class="bbbug_main_chat_toolbar">
             <div class="bbbug_main_chat_toolbar_item">
-              <img
-                title="发送表情"
-                class="bbbug_main_chat_toolbar_emoji"
-                @click.stop="showEmojiBox"
-                :src="getStaticUrl('new/images/button_emoji.png')"
-              />
-
-              <el-upload
-                :action="uploadImageUrl"
-                :show-file-list="false"
-                :on-success="handleImageUploadSuccess"
-                class="bbbug_main_chat_toolbar_img"
-                :before-upload="doUploadBefore"
-                :data="baseData"
-              >
+              <div class="emoji_picture">
                 <img
-                  title="上传图片"
-                  class=""
-                  :src="getStaticUrl('new/images/button_image.png')"
+                  title="发送表情"
+                  class="bbbug_main_chat_toolbar_emoji"
+                  @click.stop="showEmojiBox"
+                  :src="getStaticUrl('new/images/button_emoji.png')"
                 />
-              </el-upload>
-              <el-slider
-                v-if="isVolumeBarShow"
-                class="bbbug_main_menu_song_volume_bar"
-                v-model="audioVolume"
-                vertical
-                show-stops
-                @input="audioVolumeChanged"
-                height="80px"
-              >
-              </el-slider>
-              <div class="bbbug_main_chat_input_song" v-if="isPlayerShow">
-                <div
-                  class="bbbug_main_chat_input_song_name"
-                  v-if="songInfo && songInfo.song"
+
+                <el-upload
+                  :action="uploadImageUrl"
+                  :show-file-list="false"
+                  :on-success="handleImageUploadSuccess"
+                  class="bbbug_main_chat_toolbar_img"
+                  :before-upload="doUploadBefore"
+                  :data="baseData"
                 >
-                  <span
-                    >{{ songInfo.song.name }}({{ songInfo.song.singer }})</span
-                  >
-                  <i
-                    class="iconfont icon-icon_people_fill"
-                    style="
-                      font-weight: bold;
-                      font-size: 14px;
-                      vertical-align: middle;
-                      margin-left: 10px;
-                      display: inline-block;
-                    "
-                  ></i>
-                  <font
-                    style="cursor: pointer"
-                    title="点击查看资料"
-                    @click.stop="showUserPage(songInfo.user.user_id)"
-                    class="orangered"
-                  >
-                    {{ urldecode(songInfo.user.user_name) }}</font
-                  >
-                </div>
+                  <img
+                    title="上传图片"
+                    class=""
+                    :src="getStaticUrl('new/images/button_image.png')"
+                  />
+                </el-upload>
+                <el-slider
+                  v-if="isVolumeBarShow"
+                  class="bbbug_main_menu_song_volume_bar"
+                  v-model="audioVolume"
+                  vertical
+                  show-stops
+                  @input="audioVolumeChanged"
+                  height="80px"
+                >
+                </el-slider>
+              </div>
+              <div class="bbbug_main_chat_input_song" v-if="isPlayerShow">
                 <div class="bbbug_main_chat_input_song_ctrl">
                   <i
                     v-if="songInfo"
@@ -557,6 +530,34 @@
                     title="切歌/不喜欢"
                     class="iconfont icon-xiayige"
                   ></i>
+                </div>
+                <div
+                  class="bbbug_main_chat_input_song_name"
+                  v-if="songInfo && songInfo.song"
+                >
+                  <span class="song_right1"
+                    >{{ songInfo.song.name }}({{ songInfo.song.singer }})</span
+                  >
+                  <div class="user_info">
+                    <i
+                      class="iconfont icon-icon_people_fill"
+                      style="
+                        font-weight: bold;
+                        font-size: 14px;
+                        vertical-align: middle;
+                        margin-left: 10px;
+                        display: inline-block;
+                      "
+                    ></i>
+                    <font
+                      style="cursor: pointer"
+                      title="点击查看资料"
+                      @click.stop="showUserPage(songInfo.user.user_id)"
+                      class="orangered"
+                    >
+                      {{ urldecode(songInfo.user.user_name) }}</font
+                    >
+                  </div>
                 </div>
               </div>
             </div>
@@ -695,6 +696,11 @@
             class="bbbug_frame_box"
             v-if="dialog && dialog.RoomList"
           ></RoomList>
+          <MusicInfo
+            :songInfo="songInfo"
+            class="bbbug_frame_box"
+            v-if="dialog && dialog.MusicInfo"
+          ></MusicInfo>
           <RoomPassword
             class="bbbug_frame_box"
             v-if="dialog && dialog.RoomPassword"
@@ -826,6 +832,7 @@
   </div>
 </template>
 <script>
+import MusicInfo from "./components/MusicInfo.vue";
 import MySetting from "./components/MySetting.vue";
 import MySongList from "./components/MySongList.vue";
 import OnlineList from "./components/OnlineList.vue";
@@ -851,6 +858,7 @@ export default {
     Profile,
     RoomCreate,
     RoomList,
+    MusicInfo,
     RoomPassword,
     RoomSetting,
     SearchSongs,
@@ -1090,13 +1098,17 @@ export default {
         localStorage.getItem("isDarkModel") != 0
       ) {
         that
-          .$confirm("", "暗黑模式上线啦", {
-            confirmButtonText: "体验",
-            cancelButtonText: "暂不",
-            closeOnClickModal: false,
-            closeOnPressEscape: false,
-            type: "warning",
-          })
+          .$confirm(
+            "全新的BBBUG暗黑模式上线啦,是否体验一下?",
+            "暗黑模式上线啦",
+            {
+              confirmButtonText: "体验",
+              cancelButtonText: "暂不",
+              closeOnClickModal: false,
+              closeOnPressEscape: false,
+              type: "warning",
+            }
+          )
           .then(function () {
             that.updateDarkModel(true);
             that.getUserInfo();
@@ -2056,6 +2068,19 @@ export default {
       }
     },
     /**
+     * @description: 显示歌曲信息
+     * @param {null}
+     * @return {null}
+     */
+    showMusicInfo() {
+      if (this.dialog.MusicInfo) {
+        this.hideAll();
+      } else {
+        this.hideAll();
+        this.dialog.MusicInfo = true;
+      }
+    },
+    /**
      * @description: 显示系统设置
      * @param {null}
      * @return {null}
@@ -2098,6 +2123,7 @@ export default {
         Profile: false,
         RoomCreate: false,
         RoomList: false,
+        MusicInfo: false,
         RoomPassword: false,
         RoomSetting: false,
         SearchSongs: false,
@@ -3366,10 +3392,36 @@ export default {
 };
 </script>
 <style>
+@keyframes Rotate {
+  from {
+    transform: rotateZ(0);
+  }
+
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+.autoRotate {
+  animation-name: Rotate;
+  animation-iteration-count: infinite;
+  animation-play-state: running;
+  animation-timing-function: linear;
+  animation-duration: 5s;
+}
+
+.cover {
+  border-radius: 75px;
+  z-index: 8;
+}
 .el-dropdown-menu {
   padding: 0;
 }
 
+.emoji_picture {
+  position: absolute;
+  /* z-index: 1; */
+}
 .bbbug_main_chat_item {
   position: relative;
   min-height: 70px;
@@ -3708,8 +3760,8 @@ export default {
 .bbbug_main_chat_toolbar_tobottom {
   position: absolute;
   right: 20px;
-  bottom: 40px;
-  z-index: 10;
+  bottom: 60px;
+  /* z-index: 10; */
 }
 
 .bbbug_main_chat_toolbar_tobottom i {
@@ -3921,22 +3973,24 @@ export default {
 
 .bbbug_main_chat_input_song {
   font-size: 14px;
-  position: absolute;
+  position: relative;
   right: 10px;
-  bottom: 5px;
+  bottom: 6px;
   color: rgb(121, 115, 115);
 }
 
 .bbbug_main_chat_input_song_name {
-  font-size: 12px;
+  /* font-size: 12px; */
   display: inline-block;
-  margin-right: 5px;
+  /* margin-right: 5px; */
   color: #aaa;
   vertical-align: middle;
+  margin-bottom: 5px;
+  float: right;
 }
 
 .bbbug_main_chat_input_song_name * {
-  max-width: 200px;
+  max-width: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -3947,6 +4001,8 @@ export default {
 .bbbug_main_chat_input_song_ctrl {
   display: inline-block;
   vertical-align: middle;
+  float: right;
+  margin-left: 120px;
 }
 
 .bbbug_main_chat_input_song_ctrl .iconfont {

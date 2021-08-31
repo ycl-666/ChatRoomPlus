@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div id="PlaySongList">
         <div class="bbbug_main_right">
             <div class="bbbug_main_right_song">
@@ -123,7 +123,8 @@
                         data: {
                             index:index,
                             room_id: that.global.room_id,
-                            mid: that.list[index].song.mid
+                            mid: that.list[index].song.mid,
+                            user_name:that.global.userInfo.user_name
                         },
                         success(res) {
                             that.$message.success(res.msg);

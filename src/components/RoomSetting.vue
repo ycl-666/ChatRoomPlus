@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div id="RoomSetting">
         <div class="bbbug_main_right">
             <div class="bbbug_main_right_room">

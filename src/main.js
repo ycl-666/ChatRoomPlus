@@ -1,4 +1,4 @@
-﻿//main.js文件中引入
+//main.js文件中引入
 import Vue from 'vue';
 //导入ElementUI
 import ElementUI from 'element-ui';
@@ -24,7 +24,7 @@ Vue.prototype.global = {
         myRoom: false,
         user_admin: false,
         user_head: "new/images/nohead.jpg",
-        user_id: -1,
+        user_id: -6,
         user_name: "Ghost",
         access_token: "65536",
     },
@@ -39,20 +39,21 @@ Vue.prototype.global = {
         version: 10000,
     },
     // API后端地址
-    apiUrl: "http://www.gzxtest.xyz:8080/",
+    // 192.168.137.1
+    apiUrl: "http://127.0.0.1:8080/",
     // 静态文件地址 如不使用CDN 请保持跟上面一致
-    staticUrl: "http://www.gzxtest.xyz:8080/",
+    staticUrl: "http://127.0.0.1:8080/",
     // Websocket连接地址
-    wssUrl: "ws://www.gzxtest.xyz:8080/",
+    wssUrl: "ws://127.0.0.1:8080/",
     songKeyword: "",
     uploadMusicUrl: '',
     uploadMusicMid: 0,
     // 第三方登录APPID列表
     appIdList: {
-        qq: "65536",
-        gitee: "65536",
-        oschina: "65536",
-        ding: "65536"
+        qq: "101904044",
+        gitee: "d2c3e3c6f5890837a69c65585cc14488e4075709db1e89d4cb4c64ef1712bdbb",
+        oschina: "utwQOfbgBgBcwBolfNft",
+        ding: "dingoag8afgz20g2otw0jf"
     },
 };
 
@@ -206,7 +207,6 @@ Vue.prototype.websocket = {
 import App from './App.vue';
 
 Vue.use(vuePhotoPreview, {});
-
 
 //new Vue 启动
 new Vue({

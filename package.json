@@ -4,7 +4,6 @@
   "author": "928926035@qq.com",
   "private": true,
   "scripts": {
-    "start": "npm run dev",
     "dev": "webpack-dev-server --inline --hot --env.dev --host 0.0.0.0",
     "build": "rimraf dist && webpack -p --progress --hide-modules"
   },
